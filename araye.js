@@ -573,8 +573,9 @@
     };
     ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'pointerleave'].forEach(function (type) {
       var fn = { pointerdown: onPD, pointermove: onPM, pointerup: onPU, pointercancel: onPU, pointerleave: onPU }[type];
-      canvas.addEventListener(type, fn);
-      T.disposables.push({ dispose: function () { canvas.removeEventListener(type, fn); } });
+      var opts = (type === 'pointermove') ? { passive: true } : false;
+      canvas.addEventListener(type, fn, opts);
+      T.disposables.push({ dispose: function () { canvas.removeEventListener(type, fn, opts); } });
     });
     var fit = function () {
       var w = canvas.clientWidth || 300, h = canvas.clientHeight || 300, dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -599,6 +600,12 @@
         entries.forEach(function (en) { T.inView = en.isIntersecting; });
       }, { threshold: 0 });
       T.ioV.observe(canvas);
+      // generous margin: fully skip renderer.render while the canvas is far offscreen
+      T.visible = true;
+      T.ioVis = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { T.visible = en.isIntersecting; });
+      }, { rootMargin: '2000px' });
+      T.ioVis.observe(canvas);
     }
     var tick = function () {
       T.raf = requestAnimationFrame(tick);
@@ -607,7 +614,7 @@
       T.ry = (T.ry || 0) + ((T.tRy || 0) - (T.ry || 0)) * 0.08;
       T.rx = (T.rx == null ? 0.12 : T.rx) + ((T.tRx == null ? 0.12 : T.tRx) - (T.rx == null ? 0.12 : T.rx)) * 0.08;
       T.root.rotation.y = T.ry; T.root.rotation.x = T.rx;
-      if (T.inView === false) return;
+      if (T.inView === false || T.visible === false) return;
       if (!T.post) { renderer.render(scene, camera); return; }
       renderer.setRenderTarget(T.rtScene);
       renderer.render(scene, camera);
@@ -637,6 +644,7 @@
     if (T.raf) cancelAnimationFrame(T.raf);
     if (T.ro) T.ro.disconnect();
     if (T.ioV) { T.ioV.disconnect(); T.ioV = null; }
+    if (T.ioVis) { T.ioVis.disconnect(); T.ioVis = null; }
     if (T.onVis) { document.removeEventListener('visibilitychange', T.onVis); T.onVis = null; }
     if (T.gemGeo) { try { T.gemGeo.dispose(); } catch (e) {} T.gemGeo = null; }
     T.disposables.forEach(function (d) { try { d.dispose(); } catch (e) {} });
@@ -759,12 +767,16 @@
       }
       function tick() {
         raf = null;
+        if (current === -1 || !pv.classList.contains('is-in')) return; // never run while hidden
         x += (tx - x) * 0.22;
         y += (ty - y) * 0.22;
         pv.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
         if (Math.abs(tx - x) > 0.3 || Math.abs(ty - y) > 0.3) raf = requestAnimationFrame(tick);
       }
-      function schedule() { if (!raf) raf = requestAnimationFrame(tick); }
+      function schedule() {
+        if (raf || current === -1 || !pv.classList.contains('is-in')) return;
+        raf = requestAnimationFrame(tick);
+      }
       rows.forEach(function (row, i) {
         row.addEventListener('mouseenter', function (e) {
           tx = e.clientX + 28; ty = e.clientY - 100;
@@ -777,8 +789,11 @@
           tx = e.clientX + 28; ty = e.clientY - 100;
           clamp();
           schedule();
+        }, { passive: true });
+        row.addEventListener('mouseleave', function () {
+          hide();
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
         });
-        row.addEventListener('mouseleave', hide);
       });
     } else {
       // Touch / no-hover / reduced-motion: tap toggles a preview anchored inside the row
@@ -794,5 +809,59 @@
         });
       });
     }
+  })();
+
+  /* =============== Collection rail walkthrough =============== */
+  (function rail() {
+    var section = document.getElementById('collection');
+    var el = section && section.querySelector('.rail');
+    if (!el) return;
+    var prev = (section && section.querySelector('.rail-prev')) || document.querySelector('.rail-prev');
+    var next = (section && section.querySelector('.rail-next')) || document.querySelector('.rail-next');
+    var GAP = 30;
+
+    function step() {
+      var card = el.querySelector('.card');
+      return card ? card.offsetWidth + GAP : el.clientWidth * 0.8;
+    }
+    function go(dir) {
+      el.scrollBy({ left: dir * step(), behavior: REDUCE ? 'auto' : 'smooth' });
+    }
+    function setState(btn, off) {
+      if (!btn) return;
+      btn.classList.toggle('disabled', off);
+      btn.setAttribute('aria-disabled', off ? 'true' : 'false');
+      btn.style.opacity = off ? '.35' : '';
+      btn.style.pointerEvents = off ? 'none' : '';
+    }
+    function update() {
+      var max = el.scrollWidth - el.clientWidth;
+      setState(prev, el.scrollLeft <= 4);
+      setState(next, el.scrollLeft >= max - 4 || max <= 4);
+    }
+
+    if (prev) prev.addEventListener('click', function () { go(-1); update(); });
+    if (next) next.addEventListener('click', function () { go(1); update(); });
+    el.addEventListener('scroll', function () {
+      if (rafP) return;
+      rafP = requestAnimationFrame(function () { rafP = null; update(); });
+    }, { passive: true });
+    var rafP = null;
+    window.addEventListener('resize', update);
+    update();
+    // re-check once images settle, since scrollWidth grows as cards load
+    window.addEventListener('load', update);
+
+    // Keyboard stepping: only while focus is inside the collection section,
+    // so global arrow-key scroll is never hijacked.
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (!section.contains(e.target)) return;
+      var rect = el.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      e.preventDefault();
+      go(e.key === 'ArrowLeft' ? -1 : 1);
+      update();
+    });
   })();
 })();
