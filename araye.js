@@ -7,6 +7,15 @@
 (function () {
   'use strict';
 
+  // Prevent mobile browsers from jumping to anchors on load
+  if (window.location.hash) {
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  // Enable smooth scroll only after initial load settles
+  setTimeout(function () {
+    document.documentElement.classList.add('js-loaded');
+  }, 100);
+
   var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* =============== Motion =============== */
