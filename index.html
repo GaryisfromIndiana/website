@@ -127,8 +127,6 @@ html.js-loaded { scroll-behavior: smooth; }
 .rail::-webkit-scrollbar { height: 5px; }
 .rail::-webkit-scrollbar-thumb { background: #3A3A38; }
 .rail::-webkit-scrollbar-track { background: #1B1B1A; }
-.rail .card { transition: opacity .5s var(--ease); }
-.rail .card:not(.is-active) { opacity: .75; }
 
 /* Bespoke steps */
 .steprow { border-top: 1px solid var(--hairline); transition: background-color .35s var(--ease); position: relative; }
@@ -145,7 +143,7 @@ html.js-loaded { scroll-behavior: smooth; }
 .optbtn:active { transform: scale(.98); }
 .optbtn:hover { border-color: #8A8782; }
 .optbtn:focus-visible { outline: 2px solid var(--dawn); outline-offset: 2px; }
-.optdesc { font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--muted); }
+.optdesc { font-family: var(--serif); font-style: italic; font-size: 15px; color: #6E6B65; }
 
 .footlink { font-family: var(--sans); font-size: 13px; font-weight: 300; letter-spacing: .08em; color: #A5A29A; }
 .footlink:hover { color: #F2F1EE; }
@@ -157,7 +155,7 @@ html.js-loaded { scroll-behavior: smooth; }
 #site-header.scrolled .hdr-meta { max-height: 0; opacity: 0; }
 
 /* Anchor jumps clear the fixed header */
-section[id]:not(#top) { scroll-margin-top: 150px; }
+section[id]:not(#top) { scroll-margin-top: 166px; }
 
 /* Horizontal bleed guard */
 body { overflow-x: hidden; }
@@ -169,7 +167,7 @@ body { overflow-x: hidden; }
 @media (max-width: 880px) {
   .g12 { display: block; }
   .g12 > * + * { margin-top: 46px; }
-  img[style*="rotate(-5deg)"] { left: 0 !important; }
+  img.tilt-img { left: 0 !important; }
 }
 @media (max-width: 640px) {
   section, footer > div, #site-header,
@@ -291,6 +289,7 @@ body { overflow-x: hidden; }
   .card img { transition: none; }
   #hero-img, .hero-anim, #top > div[aria-hidden="true"], #site-header, #site-header .mark, #site-header nav a { animation: none !important; }
   .step-preview { transition: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 </style>
 </head>
@@ -344,7 +343,7 @@ body { overflow-x: hidden; }
       </div>
       <div class="reveal d1" style="grid-column: 7 / span 6; position: relative; padding: 0 0 84px 24px">
         <img src="./assets/59f75fed60e38ce7ab9ffa38de43aae4.jpg" alt="Sculptural polished pendant holding three round diamonds, standing on a marble ledge" loading="lazy" decoding="async" style="display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 28%">
-        <img src="./assets/095ceb89323f55673081b1ccaeea85ec.jpg" alt="Pencil sketch of a diamond ring beside a gold drafting pen" loading="lazy" decoding="async" style="position: absolute; left: -36px; bottom: 0; width: 46%; aspect-ratio: 4 / 3; object-fit: cover; border: 8px solid #fff; transform: rotate(-5deg); box-shadow: 0 18px 44px rgba(29,28,28,.14)">
+        <img class="tilt-img" src="./assets/095ceb89323f55673081b1ccaeea85ec.jpg" alt="Pencil sketch of a diamond ring beside a gold drafting pen" loading="lazy" decoding="async" style="position: absolute; left: -36px; bottom: 0; width: 46%; aspect-ratio: 4 / 3; object-fit: cover; border: 8px solid #fff; transform: rotate(-5deg); box-shadow: 0 18px 44px rgba(29,28,28,.14)">
       </div>
     </div>
   </section>
@@ -354,10 +353,10 @@ body { overflow-x: hidden; }
     <div class="g12" style="max-width: 1240px; margin: 0 auto; padding: 150px 56px; box-sizing: border-box; gap: 72px; align-items: center">
       <figure class="reveal" style="grid-column: 1 / span 5; margin: 0; position: relative; max-width: 480px">
         <img src="./assets/681c3a2e_2x.jpg" alt="Round brilliant diamond held in tweezers beside gold, silver and stone samples" loading="lazy" decoding="async" style="display: block; width: 100%; filter: saturate(.94) contrast(1.05)">
-        <span class="tiny" style="display: block; margin-top: 16px; color: #6F6C66">the bench, Dubai atelier</span>
+        <span class="tiny" style="display: block; margin-top: 16px; color: #8F8C84">the bench, Dubai atelier</span>
       </figure>
       <div class="reveal d1" style="grid-column: 7 / span 6; display: flex; flex-direction: column; gap: 22px">
-        <p class="voice" style="margin: 0; font-size: clamp(30px, 3.6vw, 50px); line-height: 1.28; color: #F5F4F1">“Every stone is chosen by hand. Every setting begins as a sketch at the bench.”</p>
+        <p class="voice" style="margin: 0; font-size: clamp(30px, 3.6vw, 50px); line-height: 1.3; color: #F5F4F1">“Every stone is chosen by hand. Every setting begins as a sketch at the bench.”</p>
         <svg aria-hidden="true" width="210" height="24" viewBox="0 0 210 24" fill="none" style="display:block"><path class="curve-path" d="M2 20 C 58 2, 132 28, 208 7" stroke="#C8A96A" stroke-width="1.2" stroke-linecap="round"></path></svg>
       </div>
     </div>
@@ -379,42 +378,42 @@ body { overflow-x: hidden; }
       </div>
 
       <div class="rail" style="display: flex; align-items: flex-start; gap: 30px; overflow-x: auto; scroll-snap-type: x proximity; padding: 72px 56px 30px; scroll-padding: 56px">
-        <figure class="card reveal" style="margin: 0; flex: 0 0 min(410px, 82%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
+        <figure class="card" style="margin: 0; flex: 0 0 min(410px, 82%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
           <div style="overflow: hidden; aspect-ratio: 3 / 4"><img src="./assets/d2821375b69888a563239948fd38be43.jpg" alt="Twisted gold and diamond necklace draped on a stone bust" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%"></div>
           <figcaption style="display: flex; flex-direction: column; gap: 5px">
             <span class="display" style="font-size: 23px; font-weight: 400; letter-spacing: .02em; color: #F5F4F1">Entwined Necklace</span>
             <span class="voice" style="font-size: 16px; color: var(--dark-muted)">18K gold, pavé diamonds</span>
           </figcaption>
         </figure>
-        <figure class="card reveal d1" style="margin: 64px 0 0; flex: 0 0 min(330px, 76%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
+        <figure class="card" style="margin: 64px 0 0; flex: 0 0 min(330px, 76%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
           <div style="overflow: hidden; aspect-ratio: 3 / 4"><img src="./assets/cf933062ea6ea6a2b8f51fcfcbee157d.jpg" alt="Wave-shaped pave diamond earrings on a travertine ledge" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%"></div>
           <figcaption style="display: flex; flex-direction: column; gap: 5px">
             <span class="display" style="font-size: 23px; font-weight: 400; letter-spacing: .02em; color: #F5F4F1">Wave Earrings</span>
             <span class="voice" style="font-size: 16px; color: var(--dark-muted)">the curve, worn close</span>
           </figcaption>
         </figure>
-        <figure class="card reveal d2" style="margin: 0; flex: 0 0 min(410px, 82%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
+        <figure class="card" style="margin: 0; flex: 0 0 min(410px, 82%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
           <div style="overflow: hidden; aspect-ratio: 3 / 4"><img src="./assets/633f595c35f02c3b1dc5ff8d3043f671.jpg" alt="Fancy yellow radiant-cut diamond pendant with a white diamond halo, worn on a gold chain" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%"></div>
           <figcaption style="display: flex; flex-direction: column; gap: 5px">
             <span class="display" style="font-size: 23px; font-weight: 400; letter-spacing: .02em; color: #F5F4F1">Radiant Halo Pendant</span>
             <span class="voice" style="font-size: 16px; color: var(--dark-muted)">fancy yellow centre stone</span>
           </figcaption>
         </figure>
-        <figure class="card reveal d1" style="margin: 64px 0 0; flex: 0 0 min(330px, 76%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
+        <figure class="card" style="margin: 64px 0 0; flex: 0 0 min(330px, 76%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
           <div style="overflow: hidden; aspect-ratio: 3 / 4"><img src="./assets/0380c4e4ecbd474ebf5b2bb766f3a6d1.jpg" alt="Layered diamond riviera necklace and pear-cut solitaire pendant worn with a white tee" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%"></div>
           <figcaption style="display: flex; flex-direction: column; gap: 5px">
             <span class="display" style="font-size: 23px; font-weight: 400; letter-spacing: .02em; color: #F5F4F1">Layered Riviera &amp; Pear Drop</span>
             <span class="voice" style="font-size: 16px; color: var(--dark-muted)">made for every day</span>
           </figcaption>
         </figure>
-        <figure class="card reveal d2" style="margin: 0; flex: 0 0 min(410px, 82%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
+        <figure class="card" style="margin: 0; flex: 0 0 min(410px, 82%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
           <div style="overflow: hidden; aspect-ratio: 3 / 4"><img src="./assets/410cd569aeb2e2237e5ebdafb47bb074.jpg" alt="Oval diamond eternity band worn on a hand" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover"></div>
           <figcaption style="display: flex; flex-direction: column; gap: 5px">
             <span class="display" style="font-size: 23px; font-weight: 400; letter-spacing: .02em; color: #F5F4F1">Oval Eternity Band</span>
             <span class="voice" style="font-size: 16px; color: var(--dark-muted)">a circle without end</span>
           </figcaption>
         </figure>
-        <figure class="card reveal d1" style="margin: 64px 0 0; flex: 0 0 min(330px, 76%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
+        <figure class="card" style="margin: 64px 0 0; flex: 0 0 min(330px, 76%); scroll-snap-align: start; display: flex; flex-direction: column; gap: 18px">
           <div style="overflow: hidden; aspect-ratio: 3 / 4"><img src="./assets/99d04fcc03d5ed386fb5d123122aef5d.jpg" alt="Pink kunzite centre stone on a pear-diamond choker, worn on the neck" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%"></div>
           <figcaption style="display: flex; flex-direction: column; gap: 5px">
             <span class="display" style="font-size: 23px; font-weight: 400; letter-spacing: .02em; color: #F5F4F1">Kunzite Ribbon Choker</span>
@@ -500,12 +499,12 @@ body { overflow-x: hidden; }
             <span class="voice" aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; font-size: 15px; color: #8F8C84; pointer-events: none">drag to turn the stone</span>
           </div>
           <div style="width: 100%; background: #fff; padding: 38px 36px 34px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; position: relative; border: 1px solid #E8E6E1; box-shadow: 0 0 0 7px #131313, 0 0 0 8px rgba(200,169,106,.55), 0 40px 80px rgba(0,0,0,.5)">
-            <span class="tiny" style="color: #8A8782; position: absolute; top: 18px; left: 0; right: 0">Your selection</span>
+            <span class="tiny" style="color: #76736D; position: absolute; top: 18px; left: 0; right: 0">Your selection</span>
             <svg aria-hidden="true" width="170" height="20" viewBox="0 0 210 24" fill="none" style="display:block; margin-top: 18px"><path class="curve-path" d="M2 20 C 58 2, 132 28, 208 7" stroke="#C8A96A" stroke-width="1.2" stroke-linecap="round"></path></svg>
             <p class="display" style="margin: 8px 0 0; font-size: 26px; font-weight: 400; color: var(--ink)" id="sum1">1.00 ct round brilliant diamond</p>
             <p class="voice" style="margin: 0; font-size: 18px; color: var(--muted)" id="sum2">F-G colour, VS clarity</p>
             <p class="voice" style="margin: 0; font-size: 18px; color: var(--muted)" id="sum3">yellow gold 18K ring</p>
-          <p style="margin: 12px 0 0; font-size: 12.5px; letter-spacing: .04em; color: #8A8782">A final quotation follows your private consultation.</p>
+          <p style="margin: 12px 0 0; font-size: 12.5px; letter-spacing: .04em; color: #76736D">A final quotation follows your private consultation.</p>
           <a id="mailtoLink" href="mailto:[YOUR EMAIL]" class="btn btn-primary" style="align-self: stretch; margin-top: 16px">Send this request<svg aria-hidden="true" width="13" height="13" viewBox="0 0 14 14" fill="none" style="margin-left: 10px; flex: none"><path d="M2 12 L12 2 M4 2 h8 v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </div>
         </div>
@@ -587,19 +586,19 @@ body { overflow-x: hidden; }
 
       <div class="reveal d3 reply-card" style="width: 100%; max-width: 520px; border: 1px solid var(--hairline); padding: 44px 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px; text-align: left; margin-top: 14px; background: #FDFCFA; box-shadow: inset 0 0 0 4px #FDFCFA, inset 0 0 0 5px #EDEAE4, 0 24px 60px rgba(29,28,28,.07)">
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <label class="tiny" for="f-name" style="color: #8A8782">Your name</label>
+          <label class="tiny" for="f-name" style="color: #76736D">Your name</label>
           <input id="f-name" class="field" type="text" placeholder="Full name" autocomplete="name">
         </div>
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <label class="tiny" for="f-occasion" style="color: #8A8782">The occasion</label>
+          <label class="tiny" for="f-occasion" style="color: #76736D">The occasion</label>
           <input id="f-occasion" class="field" type="text" placeholder="An engagement, a gift, a beginning…">
         </div>
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <label class="tiny" for="f-contact" style="color: #8A8782">Preferred contact</label>
+          <label class="tiny" for="f-contact" style="color: #76736D">Preferred contact</label>
           <input id="f-contact" class="field" type="text" placeholder="Email or WhatsApp number">
         </div>
         <a href="mailto:[YOUR EMAIL]" class="btn btn-primary" id="invitation-send" style="align-self: stretch; margin-top: 6px">Request a private consultation<svg aria-hidden="true" width="13" height="13" viewBox="0 0 14 14" fill="none" style="margin-left: 10px; flex: none"><path d="M2 12 L12 2 M4 2 h8 v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        <p style="margin: 0; font-size: 12.5px; letter-spacing: .04em; color: #8A8782; text-align: center">or write to us on WhatsApp: [YOUR NUMBER]</p>
+        <p style="margin: 0; font-size: 12.5px; letter-spacing: .04em; color: #76736D; text-align: center">or write to us on WhatsApp: [YOUR NUMBER]</p>
       </div>
     </div>
     <div style="max-width: 1240px; margin: 0 auto; padding: 50px 56px 0; box-sizing: border-box">
@@ -632,7 +631,7 @@ body { overflow-x: hidden; }
         </div>
       </div>
       <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; border-top: 1px solid rgba(255,255,255,.14); padding-top: 26px">
-        <span style="font-size: 12px; letter-spacing: .06em; color: #6F6C66">© 2026 ARAYE Fine Jewellery. All rights reserved.</span>
+        <span style="font-size: 12px; letter-spacing: .06em; color: #8F8C84">© 2026 ARAYE Fine Jewellery. All rights reserved.</span>
         <svg aria-hidden="true" width="150" height="17" viewBox="0 0 210 24" fill="none"><path d="M2 20 C 58 2, 132 28, 208 7" stroke="#C8A96A" stroke-width="1.2" stroke-linecap="round"></path></svg>
       </div>
     </div>

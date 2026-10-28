@@ -87,7 +87,7 @@ Search for `[YOUR EMAIL]`, `[YOUR NUMBER]`, `[YOUR HANDLE]` in `index.html` and 
 Replace files in `assets/`. Keep filenames identical to avoid code changes. For best quality, source at least 2× the display size (e.g., 2880px wide for a 1440px hero).
 
 ### The 3D stone
-The configurator builds geometry procedurally. To change shapes, edit `stoneGeos()` in `araye.js`. To add metals, extend the color map in `apply3d()`.
+The configurator builds geometry procedurally: a true brilliant-cut facet layout (table, stars, bezels, girdle, pavilion mains/lower-girdles) mapped onto each shape outline, rendered with a custom dispersion shader (IOR 2.417 refraction, internal pavilion bounces, per-channel fire) and a bloom/ACES post pipeline. To change shapes, edit `gemGeometry()` in `araye.js`. To add metals, extend the color map in `apply3d()`.
 
 ---
 
