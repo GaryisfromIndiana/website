@@ -7,15 +7,55 @@
 (function () {
   'use strict';
 
-  // Prevent mobile browsers from jumping to anchors on load
-  if (window.location.hash) {
-    history.replaceState(null, '', window.location.pathname + window.location.search);
-  }
+  var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Enable scroll-reveal styles + smooth scroll only after JS is confirmed running,
   // so a no-JS or script-error page never leaves .reveal content invisible.
   document.documentElement.classList.add('js-loaded');
 
-  var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* =============== Smooth anchor scrolling ===============
+     Explicit scroll-to-target with scrollIntoView so the URL hash stays clean,
+     the fixed header doesn't cover the target, and reveals fire on the way. */
+  function scrollToHash(hash) {
+    var target = document.getElementById(hash);
+    if (!target) return;
+    target.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth' });
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    setTimeout(revealInView, REDUCE ? 50 : 300);
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var hash = a.getAttribute('href').slice(1);
+    if (!hash) return;
+    e.preventDefault();
+    scrollToHash(hash);
+  });
+  // If the browser has already landed on a native #hash jump (hard refresh or
+  // JS-disabled reload), the IntersectionObserver threshold may never have
+  // fired for the section now in view. Reveal whatever is on screen.
+  function revealInView() {
+    document.querySelectorAll('.reveal').forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('in');
+    });
+    document.querySelectorAll('.curve-path').forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('in');
+    });
+  }
+
+  // Honor a deep link like /#maison on load, but don't yank the user back to
+  // the anchor if they've already scrolled elsewhere.
+  if (window.location.hash) {
+    var initial = decodeURIComponent(window.location.hash.slice(1));
+    setTimeout(function () {
+      var target = document.getElementById(initial);
+      if (!target) return;
+      if (window.scrollY > 2) { revealInView(); return; } // user already scrolled — leave them be
+      scrollToHash(initial);
+    }, 300);
+  }
 
   /* =============== Motion =============== */
   (function motion() {
