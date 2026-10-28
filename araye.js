@@ -489,45 +489,42 @@
     var current = -1;
     function show(i) {
       preload(i);
-      if (current !== i) {
-        pv.classList.remove('is-in');
-        current = i;
-        var swap = function () { pv.classList.add('is-in'); };
-        pvImg.onload = swap;
-        pvImg.src = imgs[i];
-        if (pvImg.complete && pvImg.naturalWidth) { pvImg.onload = null; swap(); }
-      } else {
-        pv.classList.add('is-in');
-      }
+      if (current === i) return;
+      current = i;
+      pvImg.src = imgs[i];
+      pv.classList.add('is-in');
     }
-    function hide() { pv.classList.remove('is-in'); }
+    function hide() {
+      pv.classList.remove('is-in');
+      current = -1;
+    }
 
     if (HOVER && !REDUCE) {
       document.body.appendChild(pv);
       var tx = 0, ty = 0, x = 0, y = 0, raf = null;
-      var PW = 232, PH = 300; // approx incl. frame, for clamping
+      var PW = 232, PH = 300;
       function clamp() {
         tx = Math.max(8, Math.min(window.innerWidth - PW - 8, tx));
         ty = Math.max(8, Math.min(window.innerHeight - PH - 8, ty));
       }
       function tick() {
         raf = null;
-        x += (tx - x) * 0.14;
-        y += (ty - y) * 0.14;
+        x += (tx - x) * 0.22;
+        y += (ty - y) * 0.22;
         pv.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
         if (Math.abs(tx - x) > 0.3 || Math.abs(ty - y) > 0.3) raf = requestAnimationFrame(tick);
       }
       function schedule() { if (!raf) raf = requestAnimationFrame(tick); }
       rows.forEach(function (row, i) {
         row.addEventListener('mouseenter', function (e) {
-          tx = e.clientX + 26; ty = e.clientY - 90;
+          tx = e.clientX + 28; ty = e.clientY - 100;
           clamp();
           if (current === -1) { x = tx; y = ty; pv.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)'; }
           show(i);
           schedule();
         });
         row.addEventListener('mousemove', function (e) {
-          tx = e.clientX + 26; ty = e.clientY - 90;
+          tx = e.clientX + 28; ty = e.clientY - 100;
           clamp();
           schedule();
         });
