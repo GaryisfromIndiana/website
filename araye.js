@@ -11,10 +11,9 @@
   if (window.location.hash) {
     history.replaceState(null, '', window.location.pathname + window.location.search);
   }
-  // Enable smooth scroll only after initial load settles
-  setTimeout(function () {
-    document.documentElement.classList.add('js-loaded');
-  }, 100);
+  // Enable scroll-reveal styles + smooth scroll only after JS is confirmed running,
+  // so a no-JS or script-error page never leaves .reveal content invisible.
+  document.documentElement.classList.add('js-loaded');
 
   var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -351,9 +350,16 @@
     }
   }
 
+  function hideGemFallback() {
+    if (!canvas || !canvas.parentElement) return;
+    var img = canvas.parentElement.querySelector('img[aria-hidden="true"]');
+    if (img) img.style.display = 'none';
+  }
+
   function init3d() {
     if (T.inited || !canvas || typeof THREE === 'undefined') return;
     T.inited = true;
+    hideGemFallback();
     var disposables = T.disposables;
     function track(res) { disposables.push(res); return res; }
     var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
